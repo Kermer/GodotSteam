@@ -32,6 +32,31 @@ int SteamUC::get_appid()
 
 
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+//
+//		STATS & ACHIEVEMENTS
+//
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+// Calling this w/ N out of N progress will NOT set the achievement, the game must still do that.
+void SteamUC::indicate_achiv_progress(const String& aName, int pCurrent, int pMax)
+{
+	if ( SteamUserStats() == NULL ) { return; }
+	SteamUserStats()->IndicateAchievementProgress( aName.utf8().get_data(), (uint32)pCurrent, (uint32)pMax );
+}
+
+// Resets all user stats and (optional) achievements for this game
+void SteamUC::reset_all_stats(bool achivsToo)
+{
+	if ( SteamUserStats() == NULL ) { return; }
+	SteamUserStats()->ResetAllStats( achivsToo );
+	SteamUserStats()->StoreStats();
+}
+
+
+
+
+
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 //
@@ -233,6 +258,45 @@ Array SteamUC::get_recent_players()
 
 
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+//
+//		OTHERS
+//
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+// Checks if user owns another app
+// No idea how this cooperates with Steam Family Sharing tho...
+bool SteamUC::owns_app(int appId)
+{
+	if ( SteamApps() == NULL ) { return false; }
+	return SteamApps()->BIsSubscribedApp( (AppId_t)appId );
+}
+
+// Checks if some app is installed on this machine (not necessarily owned)
+bool SteamUC::is_app_installed( int appId )
+{
+	if ( SteamApps() == NULL ) { return false; }
+	return SteamApps()->BIsAppInstalled( (AppId_t)appId );
+}
+
+// Returns amount of time (in seconds) user has spent playing this game, in this session.
+// Could be useful for time-spent based achievements
+int SteamUC::time_in_game()
+{
+	if ( SteamUtils() == NULL ) { return 0; }
+	return SteamUtils()->GetSecondsSinceAppActive();
+}
+
+// Causes the Steam overlay to take a screenshot.
+void SteamUC::take_screenshot()
+{
+	if ( SteamScreenshots() == NULL ) { return; }
+	SteamScreenshots()->TriggerScreenshot();
+}
+
+
+
+
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -270,6 +334,9 @@ void SteamUC::_bind_methods()
 {
 	ObjectTypeDB::bind_method("is_steam_running",&SteamUC::is_running);
 	ObjectTypeDB::bind_method("get_appid",&SteamUC::get_appid);
+	// Stats & Achievements
+	ObjectTypeDB::bind_method(_MD("indicate_achiv_progress","api_name","current_val","max_val"),&SteamUC::indicate_achiv_progress);
+	ObjectTypeDB::bind_method(_MD("reset_all_stats","achievements_too"),&SteamUC::reset_all_stats,DEFVAL(true));
 	// Server/Game info
 	ObjectTypeDB::bind_method(_MD("set_fake_server_info","server_ip","port"),&SteamUC::set_fake_server_info);
 	ObjectTypeDB::bind_method(_MD("set_game_info","key","value"),&SteamUC::set_game_info);
@@ -286,6 +353,11 @@ void SteamUC::_bind_methods()
 	ObjectTypeDB::bind_method(_MD("invite_friend","steam_id","connect_string"),&SteamUC::invite_friend);
 	ObjectTypeDB::bind_method(_MD("set_played_with","steam_id"),&SteamUC::set_played_with);
 	ObjectTypeDB::bind_method("get_recent_players",&SteamUC::get_recent_players);
+	// Others
+	ObjectTypeDB::bind_method(_MD("owns_app","app_id"),&SteamUC::owns_app);
+	ObjectTypeDB::bind_method(_MD("is_app_installed","app_id"),&SteamUC::is_app_installed);
+	ObjectTypeDB::bind_method("get_time_in_game",&SteamUC::time_in_game);
+	ObjectTypeDB::bind_method("take_screenshot",&SteamUC::take_screenshot);
 	
 	
 	

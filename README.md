@@ -1,4 +1,4 @@
-# GodotSteam
+functions_overview# GodotSteam
 Steam api for Godot game engine.
 
 For Windows, Linux and (experimental) Mac.
@@ -65,7 +65,7 @@ How to use
   
 Functions Overview
 -------------
-![](http://i133.photobucket.com/albums/q50/95seba/Godot%20Others/func_overview.png)
+![](functions_overview.png)
 
 License
 -------------

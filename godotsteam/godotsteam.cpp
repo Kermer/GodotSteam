@@ -212,6 +212,7 @@ void Steam::unlock_achiv(const String& aName)
 {
 	if ( SteamUserStats() == NULL ) { return; }
 	SteamUserStats()->SetAchievement( aName.utf8().get_data() );
+	SteamUserStats()->StoreStats();
 }
 bool Steam::has_achiv(const String& aName)
 {
@@ -224,6 +225,7 @@ void Steam::reset_achiv(const String& aName)
 {
 	if ( SteamUserStats() == NULL ) { return; }
 	SteamUserStats()->ClearAchievement( aName.utf8().get_data() );
+	SteamUserStats()->StoreStats();
 }
 // Stats
 // Int
@@ -265,6 +267,24 @@ void Steam::sync_stats()
 
 
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+//
+//		OTHERS
+//
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+// Checks if user have specific DLC >INSTALLED< (not just owned, but owned & installed)
+// Most of DLCs are automatically installed on purchase.
+// Although player can uninstall/disable them in his Library. But if he does, we could assume 
+// that he doesn't want this DLC to be active, right?
+bool Steam::has_dlc(int appId)
+{
+	if ( SteamApps() == NULL ) { return false; }
+	return SteamApps()->BIsDlcInstalled( (AppId_t)appId );
+}
+
+
+
+
 
 
 void Steam::_bind_methods()
@@ -278,12 +298,14 @@ void Steam::_bind_methods()
 	// stats & achievements
 	ObjectTypeDB::bind_method(_MD("unlock_achiv","api_name"),&Steam::unlock_achiv);
 	ObjectTypeDB::bind_method(_MD("has_achiv","api_name"),&Steam::has_achiv);
+	ObjectTypeDB::bind_method(_MD("reset_achiv","api_name"),&Steam::reset_achiv);
 	ObjectTypeDB::bind_method(_MD("set_stat_i","api_name","value"),&Steam::set_stat_i);
 	ObjectTypeDB::bind_method(_MD("get_stat_i","api_name"),&Steam::get_stat_i);
 	ObjectTypeDB::bind_method(_MD("set_stat_f","api_name","value"),&Steam::set_stat_f);
 	ObjectTypeDB::bind_method(_MD("get_stat_f","api_name"),&Steam::get_stat_f);
 	ObjectTypeDB::bind_method("sync_stats",&Steam::sync_stats);
 	// other
+	ObjectTypeDB::bind_method(_MD("has_dlc","app_id"),&Steam::has_dlc);
 	ObjectTypeDB::bind_method(_MD("load_avatar","size"),&Steam::load_avatar,DEFVAL(AVATAR_MEDIUM));
 	
 	

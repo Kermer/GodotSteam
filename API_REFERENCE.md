@@ -31,11 +31,15 @@ int **get_steamid**()
 ```
 void **unlock_achiv**( String api_name )
 ```
-	Unlocks specified achievement for the player. You setup API_Name using Steamworks website.
+	Unlocks specified achievement for the player. You can setup API_Name using Steamworks website.
 ```
 bool **has_achiv**( String api_name )
 ```
 	Checks if player has unlocked specified achievement.
+```
+void **reset_achiv**( String api_name )
+```
+	"Locks" the achievement back.
 ```
 void **set_stat_i**( String api_name, int value )
 void **set_stat_f**( String api_name, float value )
@@ -51,6 +55,10 @@ void **sync_stats**()
 ```
 	Sends your stats&achievements to the Steam and requests current values from it.
 	Recommended to call it from time-to-time.
+```
+void **has_dlc**( int app_id )
+```
+	Checks if user owns and has installed specific DLC.
 ```
 void **load_avatar**( int size=AVATAR_MEDIUM )
 ```
@@ -73,6 +81,15 @@ bool **is_steam_running**()
 int **get_appid**()
 ```
 	Returns game Steam AppID
+```
+void **indicate_achiv_progress**( String api_name, int current_val, int max_val )
+```
+	Shows overlay notification informing about achievement progress.
+	Note that this won't unlock the achievement when it's "N of N". You still need to call 'unlock_achiv()'.
+```
+void **reset_all_stats**( bool achievements_too=true )
+```
+	Reset all stored stats and optionally all achievements as well.
 ```
 void **set_fake_server_info**( String server_ip, int port )
 ```
@@ -144,6 +161,22 @@ Array **get_recent_players**()
 		{ "id":steam_id(int), "name":string, "status":int(check constants) }
 	OFFLINE=0 | ONLINE=1 | BUSY=2 | AWAY=3 | SNOOZE=4 | LF_TRADE=5 | LF_PLAY=6
 ```  
+void **owns_app**( int app_id )
+```
+	Checks if user owns specific game in his library.
+```
+bool **is_app_installed**( int app_id )
+```
+	Checks if specific game is installed on this machine.
+```
+int **get_time_in_game**()
+```
+	Returns the time (in seconds) of this play session.
+``` 
+void **take_screenshot**()
+```
+	Causes the Steam overlay to take a screenshot.
+``` 
 
 
 

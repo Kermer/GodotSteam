@@ -39,6 +39,7 @@ public:
 	float get_stat_f(const String& sName);
 	void sync_stats();
 	// other
+	bool has_dlc(int appId);
 	void load_avatar(int size=AVATAR_MEDIUM);
 	
 	// not for GDScript

@@ -27,6 +27,9 @@ public:
 	bool is_running();
 	int get_appid();
 //	void set_username(const String& new_name);
+	// Stats&Achievements
+	void indicate_achiv_progress(const String& aName,int pCurrent,int pMax);
+	void reset_all_stats(bool achivsToo=true);
 	// Server/Game info
 	void set_fake_server_info(const String& server_ip, int port);
 	void set_game_info(const String& s_key, const String& s_value);
@@ -43,6 +46,13 @@ public:
 	void invite_friend(int id, const String& conString);
 	void set_played_with(int steam_id);
 	Array get_recent_players();
+	// Others
+	bool owns_app(int appId);
+	bool is_app_installed(int appId);
+	int time_in_game();
+	void take_screenshot();
+	
+	
 	CSteamID create_steamid( uint32 steamId, int accountType=-1 ) { return Steam::get_singleton()->create_steamid( steamId, accountType ); }
 	
 

@@ -1,5 +1,5 @@
-functions_overview# GodotSteam
-Steam api for Godot game engine.
+# GodotSteam
+Steam API for Godot game engine.
 
 For Windows, Linux and (experimental) Mac.
 

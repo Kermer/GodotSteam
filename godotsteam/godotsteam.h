@@ -8,7 +8,7 @@
 #include "scene/resources/texture.h" // avatars
 // #include "dictionary.h" // contains array.h as well
 
-// #include "godotsteam_uncommon.h"
+#include "godotsteam_leaderboard.h"
 
 
 class Steam: public Object
@@ -38,6 +38,8 @@ public:
 	void set_stat_f(const String& sName, float sVal);
 	float get_stat_f(const String& sName);
 	void sync_stats();
+	
+	void load_leaderboard(const String& lName);
 	// other
 	bool has_dlc(int appId);
 	void load_avatar(int size=AVATAR_MEDIUM);
@@ -50,13 +52,14 @@ public:
 protected:
 	static void _bind_methods();
 	static Steam* singleton;
-	void updateFriendList(int filter=NULL); // default = last used filter
-	void updateGroupList();
 
 private:
-	uint64 fixedAppID=0;
 	
 	STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t );
+	// STEAM_CALLBACK(Steam, _leaderboard_loaded, LeaderboardFindResult_t );
+	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
+		void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
+	
 	
 	void run_callbacks() { SteamAPI_RunCallbacks(); }
 

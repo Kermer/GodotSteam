@@ -263,6 +263,27 @@ void Steam::sync_stats()
 	SteamUserStats()->RequestCurrentStats();
 }
 
+// asks the Steam back-end for a leaderboard by name. Emits "leaderboard_loaded" when done
+void Steam::load_leaderboard(const String& lName)
+{
+	if ( SteamUserStats() == NULL ) { return; }
+	SteamAPICall_t apiCall = SteamUserStats()->FindLeaderboard( lName.utf8().get_data() );
+	callResultFindLeaderboard.Set( apiCall, this, &Steam::_leaderboard_loaded );
+}
+
+// triggered by callbacks
+// if leaderboard exists and got downloaded - return SteamLeaderboard object, if not - return "null"
+	void Steam::_leaderboard_loaded( LeaderboardFindResult_t *callData, bool bIOFailure )
+	{
+		if ( callData->m_bLeaderboardFound == 0 ) // non-existing leaderboard
+			{ emit_signal("leaderboard_loaded",Ref<SteamLeaderboard>(NULL)); }
+		else
+		{
+			Ref<SteamLeaderboard> sLeaderboard( callData->m_hSteamLeaderboard );
+			emit_signal("leaderboard_loaded",sLeaderboard);
+		}
+	}
+
 
 
 
@@ -304,12 +325,14 @@ void Steam::_bind_methods()
 	ObjectTypeDB::bind_method(_MD("set_stat_f","api_name","value"),&Steam::set_stat_f);
 	ObjectTypeDB::bind_method(_MD("get_stat_f","api_name"),&Steam::get_stat_f);
 	ObjectTypeDB::bind_method("sync_stats",&Steam::sync_stats);
+	ObjectTypeDB::bind_method(_MD("load_leaderboard","name"),&Steam::load_leaderboard);
 	// other
 	ObjectTypeDB::bind_method(_MD("has_dlc","app_id"),&Steam::has_dlc);
 	ObjectTypeDB::bind_method(_MD("load_avatar","size"),&Steam::load_avatar,DEFVAL(AVATAR_MEDIUM));
 	
 	
 	ADD_SIGNAL(MethodInfo("avatar_loaded",PropertyInfo(Variant::INT,"size"),PropertyInfo(Variant::IMAGE,"avatar")));
+	ADD_SIGNAL(MethodInfo("leaderboard_loaded",PropertyInfo(Variant::OBJECT,"SteamLeaderboard")));
 	
 	// init errors
 	BIND_CONSTANT(ERR_NO_CLIENT);

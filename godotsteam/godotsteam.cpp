@@ -26,7 +26,6 @@ CSteamID Steam::create_steamid( uint32 steamId, int accountType )
 
 int Steam::init()
 {
-	//printf("Godot steam init\n");
 	isInitSuccess = SteamAPI_Init();
 	int err = FAILED;
 	if (isInitSuccess)
@@ -53,11 +52,16 @@ int Steam::init()
 String Steam::get_userdata_path()
 {
 	if ( SteamUser() == NULL ) { return ""; }
+	// const int cubBuffer = 256; // unsure if it represents char* size in SteamAPI
+	// const char *pchBuffer = new const char[cubBuffer];
+	// bool error = SteamUser()->GetUserDataFolder( (char*)pchBuffer, cubBuffer );
 	const int cubBuffer = 256; // unsure if it represents char* size in SteamAPI
-	const char *pchBuffer = new const char[cubBuffer];
+	char *pchBuffer = new char[cubBuffer];
 	bool error = SteamUser()->GetUserDataFolder( (char*)pchBuffer, cubBuffer );
+	String userdata_path = pchBuffer;
+	delete pchBuffer;
 	// ?error? handling?
-	return pchBuffer;
+	return userdata_path;
 }
 
 
@@ -71,7 +75,7 @@ String Steam::get_userdata_path()
 // returns name of current user, or user with given steamId
 String Steam::get_username(int steamId)
 {
-	if ( SteamUser() != NULL && (steamId < 0 || steamId == SteamUser()->GetSteamID().GetAccountID()) )
+	if ( SteamUser() != NULL && (steamId <= 0 || steamId == SteamUser()->GetSteamID().GetAccountID()) )
 	{
 		return SteamFriends()->GetPersonaName();
 	}

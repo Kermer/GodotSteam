@@ -82,7 +82,6 @@ String Steam::get_username(int steamId)
 	else if ( SteamFriends() != NULL && steamId > 0 )
 	{
 		// CSteamID( unAccountID, eUniverse, eAccountType )
-		// CSteamID( (uint32)steamId, EUniverse(k_EUniversePublic), EAccountType(k_EAccountTypeIndividual) );
 		CSteamID friendID = create_steamid( steamId );
 		bool isDataLoading = SteamFriends()->RequestUserInformation( friendID, true ); // nameOnly = true
 		if (!isDataLoading) // data already loaded
@@ -283,7 +282,7 @@ void Steam::load_leaderboard(const String& lName)
 			{ emit_signal("leaderboard_loaded",Ref<SteamLeaderboard>(NULL)); }
 		else
 		{
-			Ref<SteamLeaderboard> sLeaderboard( callData->m_hSteamLeaderboard );
+			Ref<SteamLeaderboard> sLeaderboard( (int)(callData->m_hSteamLeaderboard) );
 			emit_signal("leaderboard_loaded",sLeaderboard);
 		}
 	}

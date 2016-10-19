@@ -60,7 +60,7 @@ void SteamLeaderboard::query_users_entries(Array usersId)
 	if ( SteamUserStats() == NULL ) { return; }
 	int users_count = usersId.size();
 	if ( users_count == 0 ) { return; }
-	CSteamID *pUsers = memnew(CSteamID[users_count]);
+	CSteamID *pUsers = new CSteamID[users_count];
 	for(int i=0;i<users_count;i++)
 	{
 		CSteamID user = create_steamid( usersId[i] );
@@ -68,7 +68,7 @@ void SteamLeaderboard::query_users_entries(Array usersId)
 	}
 	SteamAPICall_t apiCall = SteamUserStats()->DownloadLeaderboardEntriesForUsers( leaderboard_handle, pUsers, users_count );
 	callResultEntries.Set(apiCall, this, &SteamLeaderboard::_entries_loaded);
-	memdelete(pUsers);
+	delete[] pUsers;
 }
 
 Array SteamLeaderboard::get_entries()
@@ -79,7 +79,11 @@ Array SteamLeaderboard::get_entries()
 void SteamLeaderboard::upload_score(int score,bool keepBest)
 {
 	if ( SteamUserStats() == NULL ) { return; }
-	int method = 1 -(int)keepBest; // 1=keep best, 2=force update
+	int method = 0;
+	if (keepBest)
+		method = 1;
+	else
+		method = 2;
 	SteamUserStats()->UploadLeaderboardScore( leaderboard_handle, ELeaderboardUploadScoreMethod(method), (int32)score, NULL, 0 );
 }
 

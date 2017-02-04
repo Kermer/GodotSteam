@@ -1,8 +1,8 @@
 
 #include "godotsteam_uncommon.h"
 
-#include "core/io/ip_address.h"
-#include "core/io/ip.h"
+//#include "core/io/ip_address.h"
+//#include "core/io/ip.h"
 
 SteamUC* SteamUC::singleton = NULL;
 
@@ -64,7 +64,7 @@ void SteamUC::reset_all_stats(bool achivsToo)
 //
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 // Set data to be replicated to friends so that they can join your game
-void SteamUC::set_fake_server_info(const String& server_ip, int port)
+/*void SteamUC::set_fake_server_info(const String& server_ip, int port)
 {
 	if ( SteamUser() == NULL ) { return; }
 	// resolve address and convert it to int (IP_Address) union
@@ -78,7 +78,7 @@ void SteamUC::set_fake_server_info(const String& server_ip, int port)
 	}
 	CSteamID gameserverID = SteamUser()->GetSteamID(); // faking server ID
 	SteamUser()->AdvertiseGame(gameserverID, addr.host, port); 
-}
+}*/
 
 /*	Rich Presence data is automatically shared between friends who are in the same game
 Each user has a set of Key/Value pairs
@@ -338,7 +338,7 @@ void SteamUC::_bind_methods()
 	ObjectTypeDB::bind_method(_MD("indicate_achiv_progress","api_name","current_val","max_val"),&SteamUC::indicate_achiv_progress);
 	ObjectTypeDB::bind_method(_MD("reset_all_stats","achievements_too"),&SteamUC::reset_all_stats,DEFVAL(true));
 	// Server/Game info
-	ObjectTypeDB::bind_method(_MD("set_fake_server_info","server_ip","port"),&SteamUC::set_fake_server_info);
+//	ObjectTypeDB::bind_method(_MD("set_fake_server_info","server_ip","port"),&SteamUC::set_fake_server_info);
 	ObjectTypeDB::bind_method(_MD("set_game_info","key","value"),&SteamUC::set_game_info);
 	ObjectTypeDB::bind_method(_MD("clear_game_info"),&SteamUC::clear_game_info);
 	// Overlay

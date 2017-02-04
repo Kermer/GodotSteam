@@ -30,7 +30,7 @@ public:
 	void indicate_achiv_progress(const String& aName,int pCurrent,int pMax);
 	void reset_all_stats(bool achivsToo=true);
 	// Server/Game info
-	void set_fake_server_info(const String& server_ip, int port);
+//	void set_fake_server_info(const String& server_ip, int port);
 	void set_game_info(const String& s_key, const String& s_value);
 	void clear_game_info();
 	// Overlay

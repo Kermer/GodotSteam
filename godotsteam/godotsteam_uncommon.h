@@ -11,7 +11,6 @@
 
 class SteamUC: public Object
 {
-friend Steam;
 public:
 	enum {
 		TOP_LEFT=0, TOP_RIGHT=1, BOT_LEFT=2, BOT_RIGHT=3,

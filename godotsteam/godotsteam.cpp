@@ -26,7 +26,6 @@ CSteamID Steam::create_steamid( uint32 steamId, int accountType )
 
 int Steam::init()
 {
-	//printf("Godot steam init\n");
 	isInitSuccess = SteamAPI_Init();
 	int err = FAILED;
 	if (isInitSuccess)
@@ -53,11 +52,16 @@ int Steam::init()
 String Steam::get_userdata_path()
 {
 	if ( SteamUser() == NULL ) { return ""; }
+	// const int cubBuffer = 256; // unsure if it represents char* size in SteamAPI
+	// const char *pchBuffer = new const char[cubBuffer];
+	// bool error = SteamUser()->GetUserDataFolder( (char*)pchBuffer, cubBuffer );
 	const int cubBuffer = 256; // unsure if it represents char* size in SteamAPI
-	const char *pchBuffer = new const char[cubBuffer];
+	char *pchBuffer = new char[cubBuffer];
 	bool error = SteamUser()->GetUserDataFolder( (char*)pchBuffer, cubBuffer );
+	String userdata_path = pchBuffer;
+	delete pchBuffer;
 	// ?error? handling?
-	return pchBuffer;
+	return userdata_path;
 }
 
 
@@ -71,14 +75,13 @@ String Steam::get_userdata_path()
 // returns name of current user, or user with given steamId
 String Steam::get_username(int steamId)
 {
-	if ( SteamUser() != NULL && (steamId < 0 || steamId == SteamUser()->GetSteamID().GetAccountID()) )
+	if ( SteamUser() != NULL && (steamId <= 0 || steamId == SteamUser()->GetSteamID().GetAccountID()) )
 	{
 		return SteamFriends()->GetPersonaName();
 	}
 	else if ( SteamFriends() != NULL && steamId > 0 )
 	{
 		// CSteamID( unAccountID, eUniverse, eAccountType )
-		// CSteamID( (uint32)steamId, EUniverse(k_EUniversePublic), EAccountType(k_EAccountTypeIndividual) );
 		CSteamID friendID = create_steamid( steamId );
 		bool isDataLoading = SteamFriends()->RequestUserInformation( friendID, true ); // nameOnly = true
 		if (!isDataLoading) // data already loaded
@@ -263,6 +266,27 @@ void Steam::sync_stats()
 	SteamUserStats()->RequestCurrentStats();
 }
 
+// asks the Steam back-end for a leaderboard by name. Emits "leaderboard_loaded" when done
+void Steam::load_leaderboard(const String& lName)
+{
+	if ( SteamUserStats() == NULL ) { return; }
+	SteamAPICall_t apiCall = SteamUserStats()->FindLeaderboard( lName.utf8().get_data() );
+	callResultFindLeaderboard.Set( apiCall, this, &Steam::_leaderboard_loaded );
+}
+
+// triggered by callbacks
+// if leaderboard exists and got downloaded - return SteamLeaderboard object, if not - return "null"
+	void Steam::_leaderboard_loaded( LeaderboardFindResult_t *callData, bool bIOFailure )
+	{
+		if ( callData->m_bLeaderboardFound == 0 ) // non-existing leaderboard
+			{ emit_signal("leaderboard_loaded",Ref<SteamLeaderboard>(NULL)); }
+		else
+		{
+			Ref<SteamLeaderboard> sLeaderboard( (int)(callData->m_hSteamLeaderboard) );
+			emit_signal("leaderboard_loaded",sLeaderboard);
+		}
+	}
+
 
 
 
@@ -304,12 +328,14 @@ void Steam::_bind_methods()
 	ObjectTypeDB::bind_method(_MD("set_stat_f","api_name","value"),&Steam::set_stat_f);
 	ObjectTypeDB::bind_method(_MD("get_stat_f","api_name"),&Steam::get_stat_f);
 	ObjectTypeDB::bind_method("sync_stats",&Steam::sync_stats);
+	ObjectTypeDB::bind_method(_MD("load_leaderboard","name"),&Steam::load_leaderboard);
 	// other
 	ObjectTypeDB::bind_method(_MD("has_dlc","app_id"),&Steam::has_dlc);
 	ObjectTypeDB::bind_method(_MD("load_avatar","size"),&Steam::load_avatar,DEFVAL(AVATAR_MEDIUM));
 	
 	
 	ADD_SIGNAL(MethodInfo("avatar_loaded",PropertyInfo(Variant::INT,"size"),PropertyInfo(Variant::IMAGE,"avatar")));
+	ADD_SIGNAL(MethodInfo("leaderboard_loaded",PropertyInfo(Variant::OBJECT,"SteamLeaderboard")));
 	
 	// init errors
 	BIND_CONSTANT(ERR_NO_CLIENT);

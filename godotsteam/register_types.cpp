@@ -6,6 +6,7 @@
 
 #include "godotsteam.h"
 #include "godotsteam_uncommon.h"
+#include "godotsteam_leaderboard.h"
 
 #include "globals.h"
 
@@ -24,6 +25,8 @@ void register_godotsteam_types()
 	
 	ObjectTypeDB::register_virtual_type<Steam>();
 	ObjectTypeDB::register_virtual_type<SteamUC>();
+	
+	ObjectTypeDB::register_virtual_type<SteamLeaderboard>();
 }
 
 void unregister_godotsteam_types()

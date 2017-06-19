@@ -105,9 +105,9 @@ void SteamLeaderboard::store_entries( SteamLeaderboardEntries_t eHandle, int ent
 {
 	if ( SteamUserStats() == NULL ) { return; }
 	leaderboard_entries.clear();
+	LeaderboardEntry_t *entry = memnew(LeaderboardEntry_t);
 	for(int i=0;i<entryCount;i++)
 	{
-		LeaderboardEntry_t *entry=NULL;
 		SteamUserStats()->GetDownloadedLeaderboardEntry( eHandle, i, entry, NULL, 0 );
 		Dictionary entryDict;
 		entryDict["score"] = entry->m_nScore;
@@ -115,6 +115,7 @@ void SteamLeaderboard::store_entries( SteamLeaderboardEntries_t eHandle, int ent
 		entryDict["global_rank"] = entry->m_nGlobalRank;
 		leaderboard_entries.append(entryDict);
 	}
+	memdelete(entry);
 }
 
 

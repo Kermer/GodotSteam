@@ -282,7 +282,7 @@ void Steam::load_leaderboard(const String& lName)
 			{ emit_signal("leaderboard_loaded",Ref<SteamLeaderboard>(NULL)); }
 		else
 		{
-			Ref<SteamLeaderboard> sLeaderboard( (int)(callData->m_hSteamLeaderboard) );
+			Ref<SteamLeaderboard> sLeaderboard = memnew(SteamLeaderboard(callData->m_hSteamLeaderboard));
 			emit_signal("leaderboard_loaded",sLeaderboard);
 		}
 	}
